@@ -16,7 +16,8 @@
     finish   - close the accumulator into a suite value ready for rendering.
 
   The accumulator is the suite value plus a :current key holding the open case."
-  {:skip-wiki true}
+  {:skip-wiki true
+   :no-doc    true}
   (:require
    [clojure.string :as str])
   (:import

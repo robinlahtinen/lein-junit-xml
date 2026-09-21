@@ -19,7 +19,8 @@
     file-name     - the TEST-<ns>.xml file name for a suite.
     outcome       - classify a case as :pass, :skipped, :error or :fail.
     render        - render a whole suite value as an XML document string."
-  {:skip-wiki true}
+  {:skip-wiki true
+   :no-doc    true}
   (:require
    [clojure.string :as str])
   (:import

@@ -16,7 +16,8 @@
   Only plain, read-printable EDN may therefore survive normalisation.
 
   This namespace is an implementation detail; do not use from application code."
-  {:skip-wiki true}
+  {:skip-wiki true
+   :no-doc    true}
   (:require
    [clojure.string :as str])
   (:import
