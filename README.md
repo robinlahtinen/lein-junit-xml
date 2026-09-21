@@ -69,7 +69,7 @@ at core_test.clj:42]]></failure>
 ## Configuration
 
 ```clojure
-:junit-xml {:output-dir "target/junit-xml"}   ; the only option; this is the default
+:junit-xml {:output-dir "target/junit-xml"} ; the only option; this is the default
 ```
 
 To make plain `lein test` write reports too, alias it:
