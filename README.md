@@ -143,10 +143,10 @@ Interest, Inc. This project is not affiliated with either.*
 
 [design]: doc/design.md
 
-[tests]: https://github.com/robinlahtinen/lein-junit-xml/actions/workflows/tests.yml
+[tests-url]: https://github.com/robinlahtinen/lein-junit-xml/actions/workflows/tests.yml
 
 [tests-badge]: https://github.com/robinlahtinen/lein-junit-xml/actions/workflows/tests.yml/badge.svg
 
-[clojars]: https://clojars.org/com.github.robinlahtinen/lein-junit-xml
+[clojars-url]: https://clojars.org/com.github.robinlahtinen/lein-junit-xml
 
 [clojars-badge]: https://img.shields.io/clojars/v/com.github.robinlahtinen/lein-junit-xml.svg
