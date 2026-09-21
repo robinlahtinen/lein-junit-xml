@@ -1,0 +1,110 @@
+name: Static analysis
+
+permissions:
+    checks: write
+    contents: read
+
+on:
+    push:
+        branches: [ "main" ]
+    pull_request:
+        branches: [ "main" ]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v6
+                with:
+                    fetch-depth: 1
+
+            -   name: Lint
+                uses: DeLaGuardo/clojure-lint-action@2d6013175031096ae07bc9b90a07173029ad7dc9
+                with:
+                    clj-kondo-args: --lint src test project.clj
+                    github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    format:
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v6
+                with:
+                    fetch-depth: 1
+
+            -   name: Prepare Java
+                uses: actions/setup-java@v5
+                with:
+                    distribution: "oracle"
+                    java-version: "26"
+
+            -   name: Install Clojure tools
+                uses: DeLaGuardo/setup-clojure@13
+                with:
+                    lein: latest
+
+            -   name: Cache Maven dependencies
+                uses: actions/cache@v5
+                with:
+                    path: |
+                        ~/.m2/repository
+                        ~/.lein
+                    key: ${{ runner.os }}-lein-${{ hashFiles('project.clj') }}
+                    restore-keys: ${{ runner.os }}-lein-
+
+            -   name: Check formatting
+                run: lein cljfmt check
+
+    conventions:
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v6
+                with:
+                    fetch-depth: 1
+
+            -   name: No gen-class in source
+                run: '! grep -rE "gen-class" src/'
+
+            -   name: No defonce in source
+                run: '! grep -rE "defonce" src/'
+
+            -   name: No requiring-resolve in source (excluding comments)
+                run: '! grep -rn "(requiring-resolve" src/ | grep -v "^[^:]*:[0-9]*:\s*;"'
+
+            -   name: No top-level resolve in source (excluding comments)
+                run: '! grep -rn "(resolve " src/ | grep -v "^[^:]*:[0-9]*:\s*;"'
+
+            -   name: No eval in source (excluding comments)
+                run: '! grep -rn "(eval " src/ | grep -v "^[^:]*:[0-9]*:\s*;"'
+
+            -   name: All source files have warn-on-reflection
+                run: |
+                    total=$(find src -name "*.clj" | wc -l)
+                    found=$(grep -rl "warn-on-reflection" src/ | wc -l)
+                    if [ "$total" -ne "$found" ]; then
+                      echo "FAIL: $found/$total files have warn-on-reflection"
+                      exit 1
+                    fi
+                    echo "PASS: $found/$total files have warn-on-reflection"
+
+            -   name: Enforce keyword namespace convention
+                # Error data must use the full library name, never a short form.
+                # Both patterns below only match a short form: in the qualified
+                # keyword the character before the tail is '.', never ':'.
+                run: |
+                    BANNED=$(grep -rnE ':(lein-)?junit-xml/' src/ || true)
+                    if [ -n "$BANNED" ]; then
+                      echo "FAIL: use :com.github.robinlahtinen.lein-junit-xml/ rather than a short form"
+                      echo "$BANNED"
+                      exit 1
+                    fi
+                    echo "PASS: keyword namespaces follow the convention"
