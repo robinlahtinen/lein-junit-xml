@@ -1,0 +1,125 @@
+name: Tests
+
+permissions:
+    contents: read
+
+on:
+    push:
+        branches: [ "main" ]
+    pull_request:
+        branches: [ "main" ]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    test:
+        # Both ends of the supported Leiningen range. :min-lein-version claims
+        # 2.10.0, so 2.10.0 is tested rather than asserted.
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        strategy:
+            fail-fast: false
+            matrix:
+                lein: [ "latest", "2.10.0" ]
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v6
+                with:
+                    fetch-depth: 1
+
+            -   name: Prepare Java
+                uses: actions/setup-java@v5
+                with:
+                    distribution: "oracle"
+                    java-version: "26"
+
+            -   name: Install Clojure tools
+                uses: DeLaGuardo/setup-clojure@13
+                with:
+                    lein: ${{ matrix.lein }}
+
+            -   name: Cache Maven dependencies
+                uses: actions/cache@v5
+                with:
+                    path: |
+                        ~/.m2/repository
+                        ~/.lein
+                    key: ${{ runner.os }}-lein-${{ matrix.lein }}-${{ hashFiles('project.clj') }}
+                    restore-keys: ${{ runner.os }}-lein-
+
+            -   name: Test
+                run: lein test
+
+            -   name: Integration test
+                # Exercises the default :subprocess path, where Leiningen must
+                # resolve the published coordinate and load the runtime half into
+                # a real project JVM. Needs the plugin in the local repository.
+                run: |
+                    lein install
+                    lein test :integration
+
+    version-floor:
+        # The reporting half is loaded into the user's project JVM and runs on
+        # THEIR Clojure and THEIR Java, not Leiningen's. These floors are claimed
+        # in doc/reference.md, so they are exercised rather than assumed: the
+        # pure suites plus the schema tests run on each supported combination.
+        # The oldest Clojure and the oldest Java are tested together, because
+        # that pair is what a floor claim actually promises.
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    -   clojure: "1.9.0"
+                        java: "8"
+                        distribution: "temurin"
+                    -   clojure: "1.9.0"
+                        java: "26"
+                        distribution: "oracle"
+                    -   clojure: "1.10.3"
+                        java: "26"
+                        distribution: "oracle"
+                    -   clojure: "1.11.1"
+                        java: "26"
+                        distribution: "oracle"
+                    -   clojure: "1.12.0"
+                        java: "26"
+                        distribution: "oracle"
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v6
+                with:
+                    fetch-depth: 1
+
+            -   name: Prepare Java
+                uses: actions/setup-java@v5
+                with:
+                    distribution: ${{ matrix.distribution }}
+                    java-version: ${{ matrix.java }}
+
+            -   name: Install Clojure tools
+                uses: DeLaGuardo/setup-clojure@13
+                with:
+                    cli: latest
+
+            -   name: Cache Maven dependencies
+                uses: actions/cache@v5
+                with:
+                    path: |
+                        ~/.m2/repository
+                        ~/.deps.clj
+                    key: ${{ runner.os }}-floor-${{ matrix.clojure }}-${{ matrix.java }}
+                    restore-keys: ${{ runner.os }}-floor-
+
+            -   name: Load the reporting half
+                run: clojure -Sdeps '{:deps {org.clojure/clojure {:mvn/version "${{ matrix.clojure }}"}} :paths ["src"]}' -M -e "(require 'com.github.robinlahtinen.lein-junit-xml 'com.github.robinlahtinen.lein-junit-xml.impl.xml 'com.github.robinlahtinen.lein-junit-xml.impl.collect 'com.github.robinlahtinen.lein-junit-xml.impl.config)"
+
+            # Everything except the suites that need Leiningen on the classpath:
+            # those are covered by the `test` job on the current toolchain.
+            -   name: Run the Leiningen-independent suites
+                run: clojure -Sdeps '{:deps {org.clojure/clojure {:mvn/version "${{ matrix.clojure }}"} org.clojure/test.check {:mvn/version "1.1.3"}} :paths ["src" "test" "dev-resources"]}' -M -e "(require '[clojure.test :as t] 'com.github.robinlahtinen.lein-junit-xml.impl.xml-test 'com.github.robinlahtinen.lein-junit-xml.impl.xml-property-test 'com.github.robinlahtinen.lein-junit-xml.impl.collect-test 'com.github.robinlahtinen.lein-junit-xml.impl.config-test 'com.github.robinlahtinen.lein-junit-xml.schema-test) (let [s (t/run-tests 'com.github.robinlahtinen.lein-junit-xml.impl.xml-test 'com.github.robinlahtinen.lein-junit-xml.impl.xml-property-test 'com.github.robinlahtinen.lein-junit-xml.impl.collect-test 'com.github.robinlahtinen.lein-junit-xml.impl.config-test 'com.github.robinlahtinen.lein-junit-xml.schema-test)] (System/exit (if (pos? (+ (:fail s) (:error s))) 1 0)))"
