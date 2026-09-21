@@ -19,9 +19,11 @@ jobs:
         timeout-minutes: 10
         steps:
             -   name: Checkout
-                uses: actions/checkout@v6
+                uses: actions/checkout@v7
                 with:
                     fetch-depth: 1
 
             -   name: Check for outdated dependencies
                 uses: liquidz/antq-action@38f06c10868db5394bf46d3fe938bb027acd7272
+                with:
+                    excludes: 'technomancy/leiningen'
