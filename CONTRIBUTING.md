@@ -79,6 +79,7 @@ lein test com.github.robinlahtinen.lein-junit-xml.impl.xml-test   # one namespac
 lein install && lein test :integration                            # the real subprocess path
 lein cljfmt check
 clj-kondo --lint src test project.clj
+lein codox                                                        # the published docs, into target/docs
 ```
 
 The suite has layers worth knowing about:
