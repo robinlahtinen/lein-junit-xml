@@ -13,8 +13,8 @@ plugin jar is not on the classpath by default.
   ┌──────────────────────────┐   profile     ┌─────────────────────────────────────────┐
   │ leiningen.junit-xml      │ ────────────► │ com.github.robinlahtinen.lein-junit-xml │
   │   task: resolve, merge,  │  :deps +      │   imperative shell                      │
-  │   delegate               │  :injections  │     ├─ impl.collect   (pure)            │
-  │                          │               │     ├─ impl.xml       (pure)            │
+  │   delegate               │  :injections  │     ├─ impl.collect      (pure)         │
+  │                          │               │     ├─ impl.xml          (pure)         │
   │ …lein-junit-xml.impl     │               │     └─ writes TEST-*.xml                │
   │   .config        (pure)  │               │                                         │
   └──────────────────────────┘               └─────────────────────────────────────────┘
