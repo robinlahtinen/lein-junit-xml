@@ -17,7 +17,8 @@
   :codox {:output-path "target/docs"
           :doc-paths   ["doc"]
           :source-uri  "https://github.com/robinlahtinen/lein-junit-xml/blob/main/{filepath}#L{line}"
-          :metadata    {:doc/format :plaintext}}
+          :metadata    {:doc/format :plaintext}
+          :project     {:name "lein-junit-xml"}}
   ;; The integration suite shells out to `lein junit-xml` on the default
   ;; :subprocess path, so it needs this plugin installed first:
   ;;   lein install && lein test :integration
