@@ -140,7 +140,7 @@ junit testResults: 'target/junit-xml/TEST-*.xml'
 -   name: Test
     run: lein junit-xml
 -   name: Publish results
-    uses: mikepenz/action-junit-report@v4
+    uses: mikepenz/action-junit-report@v6
     if: always()
     with:
         report_paths: target/junit-xml/TEST-*.xml
