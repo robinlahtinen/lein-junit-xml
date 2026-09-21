@@ -12,7 +12,12 @@
   :min-lein-version "2.10.0"
   :dependencies []
   :profiles {:dev {:dependencies [[org.clojure/test.check "1.1.3"]]}}
-  :plugins [[dev.weavejester/lein-cljfmt "0.16.5"]]
+  :plugins [[dev.weavejester/lein-cljfmt "0.16.5"]
+            [lein-codox "0.10.8"]]
+  :codox {:output-path "target/docs"
+          :doc-paths   ["doc"]
+          :source-uri  "https://github.com/robinlahtinen/lein-junit-xml/blob/main/{filepath}#L{line}"
+          :metadata    {:doc/format :plaintext}}
   ;; The integration suite shells out to `lein junit-xml` on the default
   ;; :subprocess path, so it needs this plugin installed first:
   ;;   lein install && lein test :integration
