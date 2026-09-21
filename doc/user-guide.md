@@ -31,7 +31,8 @@ To have it available everywhere without touching a project, add it to the `:user
 
 Leiningen 2.13.0 itself needs Java 11, so a Java 8 build must stay on Leiningen 2.12.0 or older.
 That is a Leiningen constraint, not this plugin's, as plain `lein test` fails the same way.
-[The reference](reference.md#requirements) records how each floor was measured.
+The **Requirements** section of [the reference](reference.md) records how each floor was
+measured.
 
 ## Quick start
 
@@ -168,8 +169,8 @@ output above.
 
 Output written straight to `System/out` by tools such as SLF4J, Logback, `java.util.logging`,
 and most Java libraries bypasses Clojure's `*out*` and is not captured. Test code using
-`println` is captured. See [the reference](reference.md#why-systemout-is-not-captured) for why this is not worked
-around.
+`println` is captured. See "Why `System/out` is not captured" in [the reference](reference.md) for why this is not
+worked around.
 
 Output from threads other than the test thread is not captured either.
 
