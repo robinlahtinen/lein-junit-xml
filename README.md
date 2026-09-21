@@ -7,7 +7,7 @@
 
 ### JUnit XML reports from `lein test` for any CI/CD pipeline.
 
-A **zero-dependency** Leiningen plugin that turns `clojure.test` results into the JUnit legacy XML
+A Leiningen plugin that turns `clojure.test` results into the JUnit legacy XML
 that CI servers read. It writes one `TEST-<namespace>.xml` file per test namespace, matching the
 element and attribute set JUnit 6.2.0's own report writer emits.
 
