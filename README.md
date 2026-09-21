@@ -129,7 +129,7 @@ Interest, Inc. This project is not affiliated with either.*
 
 <!-- Links -->
 
-[api]: https://robinlahtinen.github.io/lein-junit-xml/lein-junit-xml.html
+[api]: https://robinlahtinen.github.io/lein-junit-xml/com.github.robinlahtinen.lein-junit-xml.html
 
 [docs]: https://robinlahtinen.github.io/lein-junit-xml/
 
