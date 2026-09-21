@@ -1,0 +1,8 @@
+{:paths                           ["src" "test" "project.clj"]
+ :parallel?                       true
+ :align-form-columns?             true
+ :align-map-columns?              true
+ :align-single-column-lines?      true
+ :sort-ns-references?             true
+ :normalize-newlines-at-file-end? true
+ :remove-blank-lines-in-forms?    true}
