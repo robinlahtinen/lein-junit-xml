@@ -41,14 +41,16 @@ jobs:
                 with:
                     lein: ${{ matrix.lein }}
 
-            -   name: Cache Maven dependencies
+            -   name: Cache dependencies
                 uses: actions/cache@v6
                 with:
                     path: |
                         ~/.m2/repository
                         ~/.lein
                     key: ${{ runner.os }}-lein-${{ matrix.lein }}-${{ hashFiles('project.clj') }}
-                    restore-keys: ${{ runner.os }}-lein-
+                    restore-keys: |
+                        ${{ runner.os }}-lein-${{ matrix.lein }}-
+                        ${{ runner.os }}-lein-
 
             -   name: Test
                 run: lein test
@@ -107,14 +109,14 @@ jobs:
                 with:
                     cli: latest
 
-            -   name: Cache Maven dependencies
+            -   name: Cache dependencies
                 uses: actions/cache@v6
                 with:
                     path: |
                         ~/.m2/repository
                         ~/.deps.clj
-                    key: ${{ runner.os }}-floor-${{ matrix.clojure }}-${{ matrix.java }}
-                    restore-keys: ${{ runner.os }}-floor-
+                    key: ${{ runner.os }}-cljdeps-${{ matrix.clojure }}-${{ matrix.java }}
+                    restore-keys: ${{ runner.os }}-cljdeps-
 
             -   name: Load the reporting half
                 run: clojure -Sdeps '{:deps {org.clojure/clojure {:mvn/version "${{ matrix.clojure }}"}} :paths ["src"]}' -M -e "(require 'com.github.robinlahtinen.lein-junit-xml 'com.github.robinlahtinen.lein-junit-xml.impl.xml 'com.github.robinlahtinen.lein-junit-xml.impl.collect 'com.github.robinlahtinen.lein-junit-xml.impl.config)"
