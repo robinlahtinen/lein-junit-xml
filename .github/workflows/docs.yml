@@ -1,0 +1,63 @@
+name: Documentation
+
+on:
+    push:
+        branches: [ "main" ]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+concurrency:
+    group: "pages"
+    cancel-in-progress: false
+
+jobs:
+    build-and-deploy:
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v6
+                with:
+                    fetch-depth: 1
+
+            -   name: Prepare Java
+                uses: actions/setup-java@v5
+                with:
+                    distribution: "oracle"
+                    java-version: "26"
+
+            -   name: Install Clojure tools
+                uses: DeLaGuardo/setup-clojure@13
+                with:
+                    lein: latest
+
+            -   name: Cache Maven dependencies
+                uses: actions/cache@v5
+                with:
+                    path: |
+                        ~/.m2/repository
+                        ~/.lein
+                    key: ${{ runner.os }}-lein-docs-${{ hashFiles('project.clj') }}
+                    restore-keys: ${{ runner.os }}-lein-docs-
+
+            -   name: Generate API documentation
+                run: lein codox
+
+            -   name: Setup GitHub Pages
+                uses: actions/configure-pages@v6
+
+            -   name: Upload artifact
+                uses: actions/upload-pages-artifact@v5
+                with:
+                    path: "target/docs"
+
+            -   name: Deploy to GitHub Pages
+                id: deployment
+                uses: actions/deploy-pages@v5
