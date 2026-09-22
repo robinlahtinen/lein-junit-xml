@@ -77,6 +77,45 @@ That is also why some seemingly attractive additions are absent. While `assertio
 are common conventions and the data is readily available, no schema permits them, and Jenkins ignores them. Adding them
 would trade the one hard, checkable compliance claim for nothing.
 
+## Why not `clojure.test.junit`?
+
+Clojure ships a JUnit XML reporter of its own. `clojure.test.junit` is `{:added "1.1"}`, and its `with-junit-output`
+macro wraps a `run-tests` call and emits JUnit-compatible XML. It is the obvious first answer, and it was the prior
+art's actual starting point: `test2junit`'s reporter is that file, forked from Clojure 1.5.1 and grown by half again to
+supply what was missing. The fork is the evidence: the namespace is close enough to be tempting, and closing the
+remaining gap is a rewrite.
+
+- **It writes to a stream, not to files.** `with-junit-output` prints one `<testsuites>` document to
+  `clojure.test/*test-out*`, which Leiningen binds to `*out*` around `run-tests`. Consequently, running `lein test`
+  sends the XML directly to the terminal. The docstring's remedy, rebinding `*test-out*` to your own writer, produces
+  one file for the whole run. There is no seam for the per-namespace `TEST-<ns>.xml` files Jenkins globs for.
+- **Its only entry point replaces `report`.** `with-junit-output` binds `clojure.test/report` to a
+  separate multimethod. That shadows the hook Leiningen installs, so `.lein-failures` is written
+  empty and `lein retest` runs nothing; it bypasses every downstream `defmethod`, including
+  `humane-test-output`; and its `:default` method is a no-op, so `:summary` is swallowed and the
+  console loses both the failure reports and the "Ran N tests" line. *Add methods; replace nothing*,
+  above, is the direct response; the difference is that here it is not a bug but the contract of the
+  macro. Exit codes do survive: the report counters are incremented normally, and `run-tests` builds
+  its summary from what `test-ns` returns rather than from `report`.
+- **The output misses what the schema requires.** Its `<testsuite>` carries only `name` and an optional `package`. It
+  omits `tests` (which `jenkins-junit.xsd` marks `use="required"`), counts for `failures`, `errors`, and `skipped`,
+  `time` on suite or case, `timestamp`, `hostname`, `<skipped>`, and `<system-out>`/`<system-err>`. As a result, it does
+  not validate against the schema JUnit checks its own legacy reports with, and Jenkins reports every test as
+  instantaneous.
+- **Escaping covers five characters.** `escape-xml` maps `'`, `<`, `>`, `"` and `&`. There is no XML
+  1.0 character policy, so one ANSI escape from coloured output reaches Jenkins' strict dom4j parser
+  and takes the entire suite down with it. That is [#12], at its source.
+- **Failure locations come from `(file-position 5)`**, a hardcoded stack depth deprecated in Clojure 1.2 in favour of
+  the `:file` and `:line` keys that `do-report` has merged into the event map ever since. That is [#10], at its source.
+- **There is no upstream path.** Several of these are small fixes in principle, but `clojure.test`
+  does not accept patches from outside the core team; the comment quoted above says so, and
+  recommends precisely the override-the-test-task shape this plugin takes. The namespace last
+  changed substantively in 2014. Forking it, as `test2junit` did, also carries EPL-1.0 code into an
+  MIT project.
+
+It should be cleared of at least one charge: a single `<testsuites>` root is legal because the schema declares it and
+Jenkins merges same-named suites itself, so that is not one of the reasons.
+
 ## Trade-offs
 
 **Output is captured per namespace, not per test.** Per-test capture means wrapping more of
@@ -110,7 +149,8 @@ also what bounds memory and what lets a crashed run keep the results it already 
 The format research rests on the JUnit team's `XmlReportWriter`, the Jenkins JUnit plugin's
 `SuiteResult` and `CaseResult`, and the community conventions catalogued by
 [testmoapp/junitxml](https://github.com/testmoapp/junitxml). `lein-test2junit` by Ruediger Gad is
-the prior art this replaces, and its issue tracker shaped the requirements.
+the prior art this replaces, and its issue tracker shaped the requirements; `clojure.test.junit` by
+Jason Sankey is the common ancestor both of them start from.
 
 [#2]: https://github.com/ruedigergad/test2junit/issues/2
 
