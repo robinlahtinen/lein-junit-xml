@@ -26,7 +26,7 @@ Jenkins JUnit plugin `1428.vef95b_fa_89508`.
   `clojure.test/report` methods all keep working, because the plugin delegates to the built-in task
   and adds multimethod methods instead of replacing anything.
 - **Selector-excluded tests are reported as skipped**, not silently dropped, so your totals in
-  Jenkins stay honest.
+  CI/CD stay honest.
 - **No dependencies.** Clojure and the JDK only; nothing is added to your project's classpath but the
   plugin itself.
 
