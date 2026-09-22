@@ -8,7 +8,7 @@ Add the plugin to `project.clj` so everyone building the project gets reports:
 
 ```clojure
 (defproject my-app "1.0.0"
-            :plugins [[com.github.robinlahtinen/lein-junit-xml "0.1.0-SNAPSHOT"]])
+            :plugins [[com.github.robinlahtinen/lein-junit-xml "0.1.0"]])
 ```
 
 ### User-level
@@ -17,7 +17,7 @@ To have it available everywhere without touching a project, add it to the `:user
 `~/.lein/profiles.clj`:
 
 ```clojure
-{:user {:plugins [[com.github.robinlahtinen/lein-junit-xml "0.1.0-SNAPSHOT"]]}}
+{:user {:plugins [[com.github.robinlahtinen/lein-junit-xml "0.1.0"]]}}
 ```
 
 ### Requirements

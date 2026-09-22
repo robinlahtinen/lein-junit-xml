@@ -1,4 +1,4 @@
-[**API**][api] | [**Docs**][docs] | Latest release: [v0.1.0-SNAPSHOT][latest-release]
+[**API**][api] | [**Docs**][docs] | Latest release: [v0.1.0][latest-release] (2026-09-22)
 
 [![Tests][tests-badge]][tests-url]
 [![Clojars][clojars-badge]][clojars-url]
@@ -35,7 +35,7 @@ Jenkins JUnit plugin `1428.vef95b_fa_89508`.
 Add the plugin to `:plugins` in `project.clj`:
 
 ```clojure
-:plugins [[com.github.robinlahtinen/lein-junit-xml "0.1.0-SNAPSHOT"]]
+:plugins [[com.github.robinlahtinen/lein-junit-xml "0.1.0"]]
 ```
 
 Requires Leiningen 2.10.0 or newer. The reporting half runs in your project's JVM, and supports
@@ -133,7 +133,7 @@ Interest, Inc. This project is not affiliated with either.*
 
 [docs]: https://robinlahtinen.github.io/lein-junit-xml/
 
-[latest-release]: https://github.com/robinlahtinen/lein-junit-xml/releases/tag/v0.1.0-SNAPSHOT
+[latest-release]: https://github.com/robinlahtinen/lein-junit-xml/releases/tag/v0.1.0
 
 [rationale]: doc/rationale.md
 

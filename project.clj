@@ -1,4 +1,4 @@
-(defproject com.github.robinlahtinen/lein-junit-xml "0.1.0-SNAPSHOT"
+(defproject com.github.robinlahtinen/lein-junit-xml "0.1.0"
   :description "A Leiningen plugin that writes JUnit-compliant XML reports from clojure.test results."
   :url "https://robinlahtinen.github.io/lein-junit-xml/"
   :license {:name         "MIT License"

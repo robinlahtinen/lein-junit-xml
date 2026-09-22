@@ -24,7 +24,7 @@
 
   Duplicated from project.clj because the task must name a resolvable artifact
   before the project JVM starts. A test asserts the two never drift apart."
-  "0.1.0-SNAPSHOT")
+  "0.1.0")
 
 (def ^:private coordinate
   'com.github.robinlahtinen/lein-junit-xml)
