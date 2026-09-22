@@ -59,8 +59,8 @@
   :selector keywords are all passed straight through.
 
   Commands:
-    lein junit-xml                 ; every test namespace
-    lein junit-xml :unit           ; only the :unit selector
+    lein junit-xml                  ; every test namespace
+    lein junit-xml :unit            ; only the :unit selector
     lein junit-xml my.app.core-test
 
   Reports are written to target/junit-xml by default, one TEST-<namespace>.xml

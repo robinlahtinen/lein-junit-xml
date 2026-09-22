@@ -15,8 +15,8 @@
   Two touchpoints, of two different kinds, and the difference is forced by
   direct linking rather than taste:
 
-    clojure.test/report     added defmethods, delegating to the ones they replace.
-    #'clojure.test/test-ns  alter-var-root, for suite output capture and timing.
+    clojure.test/report    - added defmethods, delegating to the ones they replace.
+    #'clojure.test/test-ns - alter-var-root, for suite output capture and timing.
 
   clojure.test is AOT-compiled with direct linking, so wrapping an internal
   callee such as do-report is invisible to its in-namespace callers: only :pass

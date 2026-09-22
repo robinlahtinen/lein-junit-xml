@@ -11,9 +11,9 @@
   clojure.test runner present.
 
   Commands:
-    suite    - open a new suite accumulator for a namespace.
-    step     - fold one clojure.test event into the accumulator.
-    finish   - close the accumulator into a suite value ready for rendering.
+    suite  - open a new suite accumulator for a namespace.
+    step   - fold one clojure.test event into the accumulator.
+    finish - close the accumulator into a suite value ready for rendering.
 
   The accumulator is the suite value plus a :current key holding the open case."
   {:skip-wiki true
